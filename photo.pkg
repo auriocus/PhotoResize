@@ -1,7 +1,7 @@
 #@verbatim
 Package photoresize0.1 {
   Require {Use tcl8.6 tk8.6}
-  Source {Wget http://www.auriocus.de/Software/photoresize0.1.tar.gz}
+  Source {Wget https://github.com/auriocus/PhotoResize/archive/master.zip}
   Configure {
     Config [Get srcdir-sys]
   }
