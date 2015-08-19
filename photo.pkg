@@ -1,0 +1,14 @@
+#@verbatim
+Package photoresize0.1 {
+  Require {Use tcl8.6 tk8.6}
+  Source {Wget http://www.auriocus.de/Software/photoresize0.1.tar.gz}
+  Configure {
+    Config [Get srcdir-sys]
+  }
+  Make {Run make}
+  Install {Run make install}
+  Clean {Run make clean}
+  Test {Run make test}
+}
+#@endverbatim
+
