@@ -20,3 +20,30 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
+This software is partly build on pamscale; the copyright notice of which follows below:
+
+
+/* pamscale.c - rescale (resample) a PNM image
+
+   This program evolved out of Jef Poskanzer's program Pnmscale from
+   his Pbmplus package (which was derived from Poskanzer's 1989
+   Ppmscale).  The resampling logic was taken from Michael Reinelt's
+   program Pnmresample, somewhat recoded to follow Netpbm conventions.
+   Michael submitted that for inclusion in Netpbm in December 2003.
+   The frame of the program is by Bryan Henderson, and the old scaling
+   algorithm is based on that in Jef Poskanzer's Pnmscale, but
+   completely rewritten by Bryan Henderson ca. 2000.  Plenty of other
+   people contributed code changes over the years.
+
+   Copyright (C) 2003 by Michael Reinelt <reinelt@eunet.at>
+  
+   Copyright (C) 1989, 1991 by Jef Poskanzer.
+  
+   Permission to use, copy, modify, and distribute this software and its
+   documentation for any purpose and without fee is hereby granted, provided
+   that the above copyright notice appear in all copies and that both that
+   copyright notice and this permission notice appear in supporting
+   documentation.  This software is provided "as is" without express or
+   implied warranty.
+*/
+
