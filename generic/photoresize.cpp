@@ -28,7 +28,6 @@
 #include "photoresize.hpp"
 //#include <iostream>
 
-using namespace std;
 
 const double EPSILON = 1e-10;
 
@@ -59,8 +58,8 @@ double filter_lanczos (double x) {
 }
 
 class resample1d {
-  vector<float> weights;
-  vector<int> windowleft;
+  std::vector<float> weights;
+  std::vector<int> windowleft;
   int sourcelength, targetlength;
   int leftborder, rightborder;
   float filterradius;
@@ -170,7 +169,7 @@ void resample1d::operator () (const P* const sourcearray, P* targetarray, int ss
   for (int pos=0; pos<leftborder; pos++) {
     register accum<P> sum;
     int left=windowleft[pos];
-    int right=min(taps, sourcelength-left);
+    int right=std::min(taps, sourcelength-left);
     for (int wpos=-left; wpos<right; wpos++) {
       sum.add(weights[taps*pos+wpos],sourcearray[(wpos+left)*sskip]);
     }
@@ -208,7 +207,7 @@ void resample1d::operator () (const P* const sourcearray, P* targetarray) {
   for (int pos=0; pos<leftborder; pos++) {
     register accum<P> sum;
     int left=windowleft[pos];
-    int right=min(taps, sourcelength-left);
+    int right=std::min(taps, sourcelength-left);
     for (int wpos=-left; wpos<right; wpos++) {
       sum.add(weights[taps*pos+wpos],sourcearray[wpos+left]);
     }
@@ -265,7 +264,7 @@ floatToSample(float const value) {
        weights.  
     */
 
-    return sample(min(int(maxval), (int)(max(0.0, (value + 0.5)))));
+    return sample(std::min(int(maxval), (int)(std::max(0.0, (value + 0.5)))));
 }
 
 // Accumulator for tuples
@@ -304,7 +303,7 @@ public:
 
 
 // Tk interface function for resampling
-string resizephoto(Tcl_Interp *interp, 
+std::string resizephoto(Tcl_Interp *interp, 
                  Tk_PhotoHandle sourceh, 
 		 Tk_PhotoHandle targeth, 
 		 int xsize, int ysize)  {
@@ -327,7 +326,7 @@ string resizephoto(Tcl_Interp *interp,
    for (int i=0; i<depth;i++)
      outputline.offset[i]=i;
    
-   vector <tuple> pixelPtr(xsize*ysize);
+   std::vector <tuple> pixelPtr(xsize*ysize);
    outputline.pixelPtr=reinterpret_cast<sample*> (&(pixelPtr[0]));
    
    //cout<<"Resampling from ("<<source_xsize<<", "<<source_ysize<<") to ("<<xsize<<", "<<ysize<<") "<<endl;
@@ -335,7 +334,7 @@ string resizephoto(Tcl_Interp *interp,
    // Allocate space for the intermediate interpolated image
    // First resample along x-direction
    // Size = new_x*old_y
-   vector <tuple> yresized(xsize*source_ysize);
+   std::vector <tuple> yresized(xsize*source_ysize);
    // Setup resampling filter
    resample1d xsampler(source_xsize, xsize);
    for (int y=0; y<source_ysize; y++) {

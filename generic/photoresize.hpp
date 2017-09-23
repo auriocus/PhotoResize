@@ -58,6 +58,7 @@
 #include <string>
 #include <sstream>
 #include <vector>
+#include <algorithm>
 
 #define STHROW(msg) { \
 	 std::ostringstream err;\

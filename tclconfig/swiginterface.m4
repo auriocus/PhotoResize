@@ -17,7 +17,7 @@
 #------------------------------------------------------------------------
 AC_DEFUN([TEA_ADD_SWIGINTERFACE], [
 		# check for SWIG
-		AC_PROG_SWIG(1.3.30)
+		AC_PROG_SWIG(3.0.1)
 		# check for existence - allows for generic/win/unix VPATH
 		# To add more dirs here (like 'src'), you have to update VPATH
 		# in Makefile.in as well
