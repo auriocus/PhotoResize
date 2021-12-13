@@ -1696,7 +1696,7 @@ SWIGEXPORT int SWIG_init(Tcl_Interp *);
 
 
 #undef SWIG_version
-#define SWIG_version "0.1"
+#define SWIG_version "0.2"
 
 
 #include <string>
@@ -1760,7 +1760,7 @@ SWIG_From_std_string  (const std::string& s)
 extern "C" {
 #endif
 SWIGINTERN int
-_wrap_resizephoto(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
+_wrap_resizephoto__SWIG_0(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
   Tcl_Interp *arg1 = (Tcl_Interp *) 0 ;
   Tk_PhotoHandle arg2 ;
   Tk_PhotoHandle arg3 ;
@@ -1810,6 +1810,182 @@ _wrap_resizephoto(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc
   Tcl_SetObjResult(interp,SWIG_From_std_string(static_cast< std::string >(result)));
   return TCL_OK;
 fail:
+  return TCL_ERROR;
+}
+
+
+SWIGINTERN int
+_wrap_resizephoto__SWIG_1(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
+  Tcl_Interp *arg1 = (Tcl_Interp *) 0 ;
+  Tk_PhotoHandle arg2 ;
+  Tk_PhotoHandle arg3 ;
+  int arg4 ;
+  int arg5 ;
+  int arg6 ;
+  int arg7 ;
+  int arg8 ;
+  int arg9 ;
+  int val4 ;
+  int ecode4 = 0 ;
+  int val5 ;
+  int ecode5 = 0 ;
+  int val6 ;
+  int ecode6 = 0 ;
+  int val7 ;
+  int ecode7 = 0 ;
+  int val8 ;
+  int ecode8 = 0 ;
+  int val9 ;
+  int ecode9 = 0 ;
+  std::string result;
+  
+  {
+    arg1 = interp;
+  }
+  if (SWIG_GetArgs(interp, objc, objv,"oooooooo:resizephoto source target x0 y0 x1 y1 xsize ysize ",(void *)0,(void *)0,(void *)0,(void *)0,(void *)0,(void *)0,(void *)0,(void *)0) == TCL_ERROR) SWIG_fail;
+  {
+    arg2 = Tk_FindPhoto (interp, Tcl_GetString(objv[1]));
+    if (arg2==NULL) {
+      SWIG_exception(SWIG_RuntimeError, "Photo not found");
+    }
+  }
+  {
+    arg3 = Tk_FindPhoto (interp, Tcl_GetString(objv[2]));
+    if (arg3==NULL) {
+      SWIG_exception(SWIG_RuntimeError, "Photo not found");
+    }
+  }
+  ecode4 = SWIG_AsVal_int SWIG_TCL_CALL_ARGS_2(objv[3], &val4);
+  if (!SWIG_IsOK(ecode4)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode4), "in method '" "resizephoto" "', argument " "4"" of type '" "int""'");
+  } 
+  arg4 = static_cast< int >(val4);
+  ecode5 = SWIG_AsVal_int SWIG_TCL_CALL_ARGS_2(objv[4], &val5);
+  if (!SWIG_IsOK(ecode5)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode5), "in method '" "resizephoto" "', argument " "5"" of type '" "int""'");
+  } 
+  arg5 = static_cast< int >(val5);
+  ecode6 = SWIG_AsVal_int SWIG_TCL_CALL_ARGS_2(objv[5], &val6);
+  if (!SWIG_IsOK(ecode6)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode6), "in method '" "resizephoto" "', argument " "6"" of type '" "int""'");
+  } 
+  arg6 = static_cast< int >(val6);
+  ecode7 = SWIG_AsVal_int SWIG_TCL_CALL_ARGS_2(objv[6], &val7);
+  if (!SWIG_IsOK(ecode7)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode7), "in method '" "resizephoto" "', argument " "7"" of type '" "int""'");
+  } 
+  arg7 = static_cast< int >(val7);
+  ecode8 = SWIG_AsVal_int SWIG_TCL_CALL_ARGS_2(objv[7], &val8);
+  if (!SWIG_IsOK(ecode8)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode8), "in method '" "resizephoto" "', argument " "8"" of type '" "int""'");
+  } 
+  arg8 = static_cast< int >(val8);
+  ecode9 = SWIG_AsVal_int SWIG_TCL_CALL_ARGS_2(objv[8], &val9);
+  if (!SWIG_IsOK(ecode9)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode9), "in method '" "resizephoto" "', argument " "9"" of type '" "int""'");
+  } 
+  arg9 = static_cast< int >(val9);
+  {
+    try {
+      result = resizephoto(arg1,arg2,arg3,arg4,arg5,arg6,arg7,arg8,arg9);
+    } catch (const std::string &msg) {
+      SWIG_exception(SWIG_RuntimeError, const_cast<char*>(msg.c_str()));
+    } catch (...) {
+      SWIG_exception(SWIG_RuntimeError, "Some C++-Error");
+    }
+  }
+  Tcl_SetObjResult(interp,SWIG_From_std_string(static_cast< std::string >(result)));
+  return TCL_OK;
+fail:
+  return TCL_ERROR;
+}
+
+
+SWIGINTERN int
+_wrap_resizephoto(ClientData clientData SWIGUNUSED, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]) {
+  Tcl_Obj *CONST *argv = objv+1;
+  int argc = objc-1;
+  if (argc == 4) {
+    int _v;
+    {
+      _v = Tk_FindPhoto (interp, Tcl_GetString(argv[0]))!=NULL;
+    }
+    if (_v) {
+      {
+        _v = Tk_FindPhoto (interp, Tcl_GetString(argv[1]))!=NULL;
+      }
+      if (_v) {
+        {
+          int res = SWIG_AsVal_int SWIG_TCL_CALL_ARGS_2(argv[2], NULL);
+          _v = SWIG_CheckState(res);
+        }
+        if (_v) {
+          {
+            int res = SWIG_AsVal_int SWIG_TCL_CALL_ARGS_2(argv[3], NULL);
+            _v = SWIG_CheckState(res);
+          }
+          if (_v) {
+            return _wrap_resizephoto__SWIG_0(clientData, interp, objc, argv - 1);
+          }
+        }
+      }
+    }
+  }
+  if (argc == 8) {
+    int _v;
+    {
+      _v = Tk_FindPhoto (interp, Tcl_GetString(argv[0]))!=NULL;
+    }
+    if (_v) {
+      {
+        _v = Tk_FindPhoto (interp, Tcl_GetString(argv[1]))!=NULL;
+      }
+      if (_v) {
+        {
+          int res = SWIG_AsVal_int SWIG_TCL_CALL_ARGS_2(argv[2], NULL);
+          _v = SWIG_CheckState(res);
+        }
+        if (_v) {
+          {
+            int res = SWIG_AsVal_int SWIG_TCL_CALL_ARGS_2(argv[3], NULL);
+            _v = SWIG_CheckState(res);
+          }
+          if (_v) {
+            {
+              int res = SWIG_AsVal_int SWIG_TCL_CALL_ARGS_2(argv[4], NULL);
+              _v = SWIG_CheckState(res);
+            }
+            if (_v) {
+              {
+                int res = SWIG_AsVal_int SWIG_TCL_CALL_ARGS_2(argv[5], NULL);
+                _v = SWIG_CheckState(res);
+              }
+              if (_v) {
+                {
+                  int res = SWIG_AsVal_int SWIG_TCL_CALL_ARGS_2(argv[6], NULL);
+                  _v = SWIG_CheckState(res);
+                }
+                if (_v) {
+                  {
+                    int res = SWIG_AsVal_int SWIG_TCL_CALL_ARGS_2(argv[7], NULL);
+                    _v = SWIG_CheckState(res);
+                  }
+                  if (_v) {
+                    return _wrap_resizephoto__SWIG_1(clientData, interp, objc, argv - 1);
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  
+  Tcl_SetResult(interp,(char *) "Wrong number or type of arguments for overloaded function 'resizephoto'.\n"
+    "  Possible C/C++ prototypes are:\n"
+    "    resizephoto(Tcl_Interp *,Tk_PhotoHandle,Tk_PhotoHandle,int,int)\n"
+    "    resizephoto(Tcl_Interp *,Tk_PhotoHandle,Tk_PhotoHandle,int,int,int,int,int,int)\n", TCL_STATIC);
   return TCL_ERROR;
 }
 

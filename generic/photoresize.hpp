@@ -6,7 +6,7 @@
 %module photoresize
 %{
 #undef SWIG_version
-#define SWIG_version "0.1"
+#define SWIG_version "0.2"
 %}
 
 %init{
@@ -70,4 +70,5 @@
 #endif //!SWIG
 
 std::string resizephoto(Tcl_Interp *interp, Tk_PhotoHandle source, Tk_PhotoHandle target, int xsize, int ysize);
+std::string resizephoto(Tcl_Interp *interp, Tk_PhotoHandle source, Tk_PhotoHandle target, int x0, int y0, int x1, int y1, int xsize, int ysize);
 #endif
