@@ -12,8 +12,17 @@ snit::widget imgviewer {
 
 	variable x0 0
 	variable y0 0
+	variable x1 0
+	variable y1 0
+	variable xc 0
+	variable yc 0
+
+	variable winwidth
+	variable winheight
 
 	variable mag 1.0
+
+	variable dragcoords {}
 
 	component disp
 
@@ -24,21 +33,19 @@ snit::widget imgviewer {
 		set height [image height $simg]
 		set width [image width $simg]
 		
-		install disp using label $win.l -image $zoomimg -width 300 -height 200
+		install disp using label $win.l -image $zoomimg -width 300 -height 200 -takefocus true
 		pack $disp -expand yes -fill both
-		bind $disp <Configure> [mymethod fit_window]
-	}
+		bind $disp <Configure> [mymethod fit_aspect]
+		bind $disp <Key-plus> [mymethod zoomin]
+		bind $disp <Key-minus> [mymethod zoomout]
 
-	method redraw {} {
-		set x0 0
-		set y0 0
-		set x1 [expr {$width - 1}] 
-		set y1 [expr {$height - 1}]
+		bind $disp <ButtonPress-1> [mymethod dragstart %x %y]
+		bind $disp <B1-Motion> [mymethod dragmove %x %y]
+		bind $disp <ButtonRelease-1> [mymethod dragend]
 
-		set dispwidth [winfo width $win]
-		set dispheight [winfo height $win]
+		focus $disp ;# how can this be avoided ?
 
-		resizephoto $sourceimg $zoomimg $x0 $y0 $x1 $y1 $dispwidth $dispheight
+		#$self fit_window
 	}
 
 	method fit_window {} {
@@ -52,25 +59,29 @@ snit::widget imgviewer {
 		
 		puts "Mag: $mag"
 		
-		set x0 0
-		set y0 0
+		set xc [expr {$width / 2.0}]
+		set yc [expr {$height / 2.0}]
 
 		$self fit_aspect
 	}
 
 	method fit_aspect {} {
-		# Input: x0, y0, mag
+		# Input: xc, yc, mag
 		# Compute source region such that the window is filled
-		# with the left upper corner at x0,y0
+		# centered at xc,yc
 
 		set winwidth [winfo width $win]
 		set winheight [winfo height $win]
 
-		set cropwidth [expr {entier(ceil(max(1.0, $winwidth / $mag)))}]
-		set cropheight [expr {entier(ceil(max(1.0, $winheight / $mag)))}]
+		set cropwidth [expr {max(1.0, $winwidth / $mag)}]
+		set cropheight [expr {max(1.0, $winheight / $mag)}]
 
-		set x1 [expr {$x0 + $cropwidth - 1}]
-		set y1 [expr {$y0 + $cropwidth - 1}]
+		set x0 [expr {max(0, entier(floor($xc - $cropwidth / 2.0)))}]
+		set y0 [expr {max(0, entier(floor($yc - $cropheight / 2.0)))}]
+
+
+		set x1 [expr {entier(ceil($x0 + $cropwidth - 1))}]
+		set y1 [expr {entier(ceil($y0 + $cropheight - 1))}]
 
 		if {$x1 >= $width} {
 			set x1 [expr {$width - 1}]
@@ -86,16 +97,15 @@ snit::widget imgviewer {
 			set dispheight $winheight
 		}	
 		
-		puts "resizephoto $sourceimg $zoomimg $x0 $y0 $x1 $y1 $dispwidth $dispheight"
+		# puts "resizephoto $sourceimg $zoomimg $x0 $y0 $x1 $y1 $dispwidth $dispheight"
 		resizephoto $sourceimg $zoomimg $x0 $y0 $x1 $y1 $dispwidth $dispheight
 
 
 	}
 
-	method scroll_zoom {x0_ y0_ mag_} {
-		set x0 $x0_
-		set y0 $y0_
-		set mag $mag_
+	method scrollto {xc_ yc_} {
+		set xc $xc_
+		set yc $yc_
 		
 		$self fit_aspect
 	}
@@ -113,6 +123,34 @@ snit::widget imgviewer {
 	method zoom_onetoone {} {
 		set mag 1.0
 		$self fit_aspect
+	}
+
+	method pixtocoord {x y} {
+		# convert pixel coordinates into image coords
+		set xm [expr {$x/$mag + $x0}]
+		set ym [expr {$y/$mag  + $y0}]
+		list $xm $ym
+	}
+
+	method dragstart {x y} {
+		set dragcoords [list $x $y $xc $yc]
+		puts "$x $y -> [$self pixtocoord $x $y]"
+	}
+
+	method dragmove {x y} {
+		if {$dragcoords eq {}} { return }
+		lassign $dragcoords xs ys xsc ysc
+
+		set xc [expr {($xs - $x)/$mag + $xsc}]
+		set yc [expr {($ys - $y)/$mag + $ysc}]
+
+		puts "Move to $xc $yc"
+		$self fit_aspect
+
+	}
+
+	method dragend {} {
+		set dragcoords {}
 	}
 
 	destructor {
