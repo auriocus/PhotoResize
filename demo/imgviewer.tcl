@@ -76,6 +76,7 @@ snit::widget imgviewer {
 		set cropwidth [expr {max(1.0, $winwidth / $mag)}]
 		set cropheight [expr {max(1.0, $winheight / $mag)}]
 
+
 		set x0 [expr {max(0, entier(floor($xc - $cropwidth / 2.0)))}]
 		set y0 [expr {max(0, entier(floor($yc - $cropheight / 2.0)))}]
 
@@ -85,6 +86,8 @@ snit::widget imgviewer {
 
 		if {$x1 >= $width} {
 			set x1 [expr {$width - 1}]
+			set x0 [expr {max(0, entier(floor($x1 - $cropwidth)))}]
+
 			set dispwidth [expr {entier(ceil(($x1 - $x0 + 1) * $mag))}]
 		} else {
 			set dispwidth $winwidth
@@ -92,6 +95,8 @@ snit::widget imgviewer {
 
 		if {$y1 >= $height} {
 			set y1 [expr {$height - 1}]
+			set y0 [expr {max(0, entier(floor($y1 - $cropheight)))}]
+			
 			set dispheight [expr {entier(ceil(($y1 - $y0 + 1) * $mag))}]
 		} else {
 			set dispheight $winheight
@@ -150,6 +155,9 @@ snit::widget imgviewer {
 	}
 
 	method dragend {} {
+		set xc [expr {($x1 + $x0) / 2}]
+		set yc [expr {($y1 + $y0) / 2}]
+		
 		set dragcoords {}
 	}
 
