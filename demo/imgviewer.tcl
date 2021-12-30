@@ -35,7 +35,7 @@ snit::widget imgviewer {
 		set height [image height $simg]
 		set width [image width $simg]
 		
-		install disp using label $win.l -image $zoomimg -width 300 -height 200 -takefocus true
+		install disp using label $win.l -image $zoomimg -width 300 -height 200 -takefocus 1
 		pack $disp -expand yes -fill both
 		bind $disp <Configure> [mymethod redraw]
 		bind $disp <Key-plus> [mymethod zoomin]
@@ -49,9 +49,6 @@ snit::widget imgviewer {
 		bind $disp <4> [mymethod wheel +1 %x %y]
 		bind $disp <5> [mymethod wheel -1 %x %y]
 
-		focus $disp ;# how can this be avoided ?
-
-		#$self fit_window
 	}
 
 	method redraw {} {
@@ -192,8 +189,8 @@ snit::widget imgviewer {
 	}
 
 	method dragstart {x y} {
+		focus $disp
 		set dragcoords [list $x $y $xc $yc]
-		#puts "$x $y -> [$self pixtocoord $x $y]"
 	}
 
 	method dragmove {x y} {
