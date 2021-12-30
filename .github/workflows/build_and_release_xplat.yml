@@ -1,0 +1,73 @@
+name: build-and-release
+
+on:
+    push:
+        branches: [master]
+    pull_request:
+        branches: [master]
+
+defaults:
+    run:
+        shell: bash
+
+jobs:
+    build:
+        runs-on: ${{ matrix.os }}
+        strategy:
+            matrix:
+                os: [macos-10.15, ubuntu-18.04, windows-latest]
+        steps:
+            - name: checkout repo
+              uses: actions/checkout@v2
+            - name: Install git sdk
+              if: ${{ matrix.os == 'windows-latest' }}
+              uses: git-for-windows/setup-git-for-windows-sdk@v1
+              with:
+                flavor: full
+
+            - name: Set CFLAGS for macOS compatibility
+              if: ${{ matrix.os == 'macos-10.15' }}
+              run: |
+                echo "CFLAGS=-mmacosx-version-min=10.13" >> $GITHUB_ENV
+                echo "MACOSX_DEPLOYMENT_TARGET=10.13" >> $GITHUB_ENV
+
+            - name: build library
+              run: ./make-ci.sh
+
+            - name: Test
+              run: make test
+
+            - name: upload result
+              uses: actions/upload-artifact@v2
+              with:
+                name: build-${{ matrix.os }}
+                path: dist/*.tar.bz2
+
+    deploy:
+        runs-on: ubuntu-latest
+        needs: [build]
+        steps:
+            - name: Download build artifacts
+              uses: actions/download-artifact@v2
+              id: download
+              with:
+                path: ~/downloads
+
+            - name: Create tarball dir
+              run: mkdir tarballs
+
+            - name: Collect all artifacts
+              run: find ${{steps.download.outputs.download-path}} -type f -exec mv {} tarballs \;
+
+            - name: Display structure of downloaded files
+              run: ls -R
+
+            - name: Release result
+              uses: marvinpinto/action-automatic-releases@v1.2.1
+              with:
+                  repo_token: "${{ secrets.GITHUB_TOKEN }}"
+                  automatic_release_tag: "latest"
+                  prerelease: true
+                  title: "Development Build"
+                  files: |
+                    tarballs/*.tar.bz2
