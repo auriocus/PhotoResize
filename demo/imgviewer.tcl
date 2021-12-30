@@ -21,6 +21,8 @@ snit::widget imgviewer {
 	variable winheight
 
 	variable mag 1.0
+	variable zoomlevel 0
+	variable redrawmethod fit_window
 
 	variable dragcoords {}
 
@@ -35,7 +37,7 @@ snit::widget imgviewer {
 		
 		install disp using label $win.l -image $zoomimg -width 300 -height 200 -takefocus true
 		pack $disp -expand yes -fill both
-		bind $disp <Configure> [mymethod fit_aspect]
+		bind $disp <Configure> [mymethod redraw]
 		bind $disp <Key-plus> [mymethod zoomin]
 		bind $disp <Key-minus> [mymethod zoomout]
 
@@ -43,21 +45,29 @@ snit::widget imgviewer {
 		bind $disp <B1-Motion> [mymethod dragmove %x %y]
 		bind $disp <ButtonRelease-1> [mymethod dragend]
 
+		bind $disp <MouseWheel> [mymethod wheel %D %x %y]
+		bind $disp <4> [mymethod wheel +1 %x %y]
+		bind $disp <5> [mymethod wheel -1 %x %y]
+
 		focus $disp ;# how can this be avoided ?
 
 		#$self fit_window
 	}
 
-	method fit_window {} {
+	method redraw {} {
 		set winwidth [winfo width $win]
 		set winheight [winfo height $win]
 
+		$self $redrawmethod
+	}
+
+	method fit_window {} {
 		set magx [expr {double($winwidth) / $width}]
 		set magy [expr {double($winheight) / $height}]
 
 		set mag [expr {min($magx, $magy)}]
 		
-		puts "Mag: $mag"
+		#puts "Mag: $mag"
 		
 		set xc [expr {$width / 2.0}]
 		set yc [expr {$height / 2.0}]
@@ -69,9 +79,6 @@ snit::widget imgviewer {
 		# Input: xc, yc, mag
 		# Compute source region such that the window is filled
 		# centered at xc,yc
-
-		set winwidth [winfo width $win]
-		set winheight [winfo height $win]
 
 		set cropwidth [expr {max(1.0, $winwidth / $mag)}]
 		set cropheight [expr {max(1.0, $winheight / $mag)}]
@@ -102,7 +109,6 @@ snit::widget imgviewer {
 			set dispheight $winheight
 		}	
 		
-		# puts "resizephoto $sourceimg $zoomimg $x0 $y0 $x1 $y1 $dispwidth $dispheight"
 		resizephoto $sourceimg $zoomimg $x0 $y0 $x1 $y1 $dispwidth $dispheight
 
 
@@ -115,19 +121,67 @@ snit::widget imgviewer {
 		$self fit_aspect
 	}
 
-	method zoomin {} {
-		set mag [expr {$mag*1.3}]
-		$self fit_aspect
+	method zoomin {{pos {}}} {
+		$self zoomby 1.2 $pos
 	}
 
-	method zoomout {} {
-		set mag [expr {$mag/1.3}]
-		$self fit_aspect
+	method zoomout {{pos {}}} {
+		$self zoomby [expr {1.0/1.2}] $pos
+	}
+
+	method zoomby {fac {pos {}}} {
+		set mag [expr {$mag*$fac}]
+
+		if {$fac > 1} {
+			incr zoomlevel 1
+		}
+
+		if {$fac < 1} {
+			incr zoomlevel -1
+		}
+
+		if {$zoomlevel == 0} {
+			set redrawmethod fit_window
+		} else {
+			set redrawmethod fit_aspect
+		}
+
+		if {$pos ne {}} {
+			lassign $pos x y
+			# zoom in/out such that the pixel under x y stays
+			# in the same relative position
+			set xfrac [expr {(double($x) / $winwidth  - 0.5) *  (1 - 1.0/$fac)}]
+			set yfrac [expr {(double($y) / $winheight - 0.5) *  (1 - 1.0/$fac)}]
+
+			# (xfrac, yfrac) is the relative coordinate of (x,y)
+			# with the origin in the center of the magnified window
+
+			# (nwidth, nheight) is the size of the visible part
+			set nwidth [expr {($x1 - $x0 + 1)}]
+			set nheight [expr {($y1 - $y0 + 1)}]
+
+			# the center must be shifted by frac to account for the zooming
+			set xc [expr {$xc + $xfrac * $nwidth }]
+			set yc [expr {$yc + $yfrac * $nheight }]
+
+		}
+
+		$self redraw
+	}
+
+	method wheel {dist x y} {
+		if {$dist > 0} {
+			$self zoomin [list $x $y]
+		} else {
+			$self zoomout
+		}
 	}
 
 	method zoom_onetoone {} {
 		set mag 1.0
-		$self fit_aspect
+		set redrawmethod fit_aspect
+
+		$self redraw
 	}
 
 	method pixtocoord {x y} {
@@ -139,7 +193,7 @@ snit::widget imgviewer {
 
 	method dragstart {x y} {
 		set dragcoords [list $x $y $xc $yc]
-		puts "$x $y -> [$self pixtocoord $x $y]"
+		#puts "$x $y -> [$self pixtocoord $x $y]"
 	}
 
 	method dragmove {x y} {
@@ -149,7 +203,7 @@ snit::widget imgviewer {
 		set xc [expr {($xs - $x)/$mag + $xsc}]
 		set yc [expr {($ys - $y)/$mag + $ysc}]
 
-		puts "Move to $xc $yc"
+		#puts "Move to $xc $yc"
 		$self fit_aspect
 
 	}
