@@ -5,6 +5,8 @@ package require snit
 
 snit::widget imgviewer {
 
+	option -size -default 300 
+		
 	variable sourceimg 
 	variable height
 	variable width
@@ -19,6 +21,10 @@ snit::widget imgviewer {
 
 	variable winwidth
 	variable winheight
+	variable dispwidth
+	variable dispheight
+
+	variable emptyimage false
 
 	variable mag 1.0
 	variable zoomlevel 0
@@ -28,14 +34,33 @@ snit::widget imgviewer {
 
 	component disp
 
-	constructor {simg} {
+	constructor {simg args} {
 		set sourceimg $simg
 
 		set zoomimg [image create photo]
 		set height [image height $simg]
 		set width [image width $simg]
 		
-		install disp using label $win.l -image $zoomimg -width 300 -height 200 -takefocus 1
+		$self configurelist $args
+
+		if {$width == 0 || $height == 0} {
+			set initwidth $options(-size)
+			set initheight $options(-size)
+			set emptyimage true
+
+			set width 1
+			set height 1
+		} else {
+			if {$width > $height} {
+				set initwidth $options(-size)
+				set initheight [expr {entier(ceil(max(1.0, double($options(-size))*$height/$width)))}]
+			} else {
+				set initheight $options(-size)
+				set initwidth [expr {entier(ceil(max(1.0, double($options(-size))*$width/$height)))}]
+			}
+		}
+		
+		install disp using label $win.l -image $zoomimg -width $initwidth -height $initheight -takefocus 1
 		pack $disp -expand yes -fill both
 		bind $disp <Configure> [mymethod redraw]
 		bind $disp <Key-plus> [mymethod zoomin]
@@ -52,6 +77,8 @@ snit::widget imgviewer {
 	}
 
 	method redraw {} {
+		if {$emptyimage} return
+		
 		set winwidth [winfo width $win]
 		set winheight [winfo height $win]
 
@@ -76,7 +103,9 @@ snit::widget imgviewer {
 		# Input: xc, yc, mag
 		# Compute source region such that the window is filled
 		# centered at xc,yc
-
+		
+		if {$emptyimage} { return }
+		
 		set cropwidth [expr {max(1.0, $winwidth / $mag)}]
 		set cropheight [expr {max(1.0, $winheight / $mag)}]
 
@@ -128,6 +157,8 @@ snit::widget imgviewer {
 
 	method zoomby {fac {pos {}}} {
 		set mag [expr {$mag*$fac}]
+		
+		if {$emptyimage} { return }
 
 		if {$fac > 1} {
 			incr zoomlevel 1
@@ -147,8 +178,8 @@ snit::widget imgviewer {
 			lassign $pos x y
 			# zoom in/out such that the pixel under x y stays
 			# in the same relative position
-			set xfrac [expr {(double($x) / $winwidth  - 0.5) *  (1 - 1.0/$fac)}]
-			set yfrac [expr {(double($y) / $winheight - 0.5) *  (1 - 1.0/$fac)}]
+			set xfrac [expr {(double($x - $winwidth / 2) / $dispwidth) *  (1 - 1.0/$fac)}]
+			set yfrac [expr {(double($y - $winheight / 2) / $dispheight) *  (1 - 1.0/$fac)}]
 
 			# (xfrac, yfrac) is the relative coordinate of (x,y)
 			# with the origin in the center of the magnified window
