@@ -3,11 +3,6 @@
 
 
 #ifdef SWIG
-%module photoresize
-%{
-#undef SWIG_version
-#define SWIG_version "0.2"
-%}
 
 %init{
   #ifdef USE_TK_STUBS

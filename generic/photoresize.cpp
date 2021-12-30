@@ -167,7 +167,7 @@ template <typename P>
 void resample1d::operator () (const P* const sourcearray, P* targetarray, int sskip, int tskip) {
   
   for (int pos=0; pos<leftborder; pos++) {
-    register accum<P> sum;
+    accum<P> sum;
     int left=windowleft[pos];
     int right=std::min(taps, sourcelength-left);
     for (int wpos=-left; wpos<right; wpos++) {
@@ -179,7 +179,7 @@ void resample1d::operator () (const P* const sourcearray, P* targetarray, int ss
   
 
   for (int pos=leftborder; pos<rightborder; pos++) {
-    register accum<P> sum;
+    accum<P> sum;
     int left=windowleft[pos];
     for (int wpos=0; wpos<taps; wpos++) {
       sum.add(weights[taps*pos+wpos],sourcearray[(wpos+left)*sskip]);
@@ -190,7 +190,7 @@ void resample1d::operator () (const P* const sourcearray, P* targetarray, int ss
 
 
   for (int pos=rightborder; pos<targetlength; pos++) {
-    register accum<P> sum;
+     accum<P> sum;
     int left=windowleft[pos];
     for (int wpos=0; wpos<sourcelength-left; wpos++) {
       sum.add(weights[taps*pos+wpos],sourcearray[(wpos+left)*sskip]);
@@ -205,7 +205,7 @@ template <typename P>
 void resample1d::operator () (const P* const sourcearray, P* targetarray) {
   
   for (int pos=0; pos<leftborder; pos++) {
-    register accum<P> sum;
+    accum<P> sum;
     int left=windowleft[pos];
     int right=std::min(taps, sourcelength-left);
     for (int wpos=-left; wpos<right; wpos++) {
@@ -216,7 +216,7 @@ void resample1d::operator () (const P* const sourcearray, P* targetarray) {
   
 
   for (int pos=leftborder; pos<rightborder; pos++) {
-    register accum<P> sum;
+    accum<P> sum;
     int left=windowleft[pos];
     for (int wpos=0; wpos<taps; wpos++) {
       sum.add(weights[taps*pos+wpos],sourcearray[wpos+left]);
@@ -226,7 +226,7 @@ void resample1d::operator () (const P* const sourcearray, P* targetarray) {
 
 
   for (int pos=rightborder; pos<targetlength; pos++) {
-    register accum<P> sum;
+    accum<P> sum;
     int left=windowleft[pos];
     for (int wpos=0; wpos<sourcelength-left; wpos++) {
       sum.add(weights[taps*pos+wpos],sourcearray[wpos+left]);
