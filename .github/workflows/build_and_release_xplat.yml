@@ -19,6 +19,10 @@ jobs:
         steps:
             - name: checkout repo
               uses: actions/checkout@v4
+            - name: install dependencies on macOS
+              if: matrix.os == 'macos-15-intel'
+              run: brew install swig
+
             - name: build library
               run: ./make-ci.sh
 
