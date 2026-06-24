@@ -4,9 +4,19 @@
 
 #ifdef SWIG
 
+/* Tcl 9 compatibility - CONST macro was removed in Tcl 9 */
+%begin %{
+#ifndef CONST
+#define CONST const
+#endif
+
+/* Override SWIG's default stubs version (8.4) to support Tcl 8.6+ and 9.x */
+#define SWIG_TCL_STUBS_VERSION "8.6-"
+%}
+
 %init{
   #ifdef USE_TK_STUBS
-  if (Tk_InitStubs(interp, (char*)"8.1", 0) == NULL) {
+  if (Tk_InitStubs(interp, (char*)"8.6-", 0) == NULL) {
     return TCL_ERROR;
   }
   #endif  
@@ -40,7 +50,35 @@
   }
 }
 
-#else 
+/* Tcl 9 lowercase init function aliases for package loading
+ * These aliases allow 'package require photoresize' to work in Tcl 9
+ * which expects lowercase init functions. The aliases are placed
+ * at the very end of the generated file after SafeInit is defined.
+ */
+%insert("runtime") %{
+/* Forward declarations for init functions */
+#define SWIG_PHOTORESIZE_INIT_ALIASES
+%}
+%insert("init") %{
+  return TCL_OK;
+}
+/* Tcl 9 lowercase init function aliases */
+#ifdef SWIG_PHOTORESIZE_INIT_ALIASES
+#ifdef __cplusplus
+extern "C" {
+#endif
+SWIGEXPORT int Photoresize_SafeInit(Tcl_Interp *interp);
+SWIGEXPORT int photoresize_Init(Tcl_Interp *interp) { return SWIG_init(interp); }
+SWIGEXPORT int photoresize_SafeInit(Tcl_Interp *interp) { return Photoresize_SafeInit(interp); }
+#ifdef __cplusplus
+}
+#endif
+#endif
+/* Dummy function to absorb any trailing code from SWIG init section */
+static inline int _swig_photoresize_init_end(Tcl_Interp *SWIGUNUSED interp) {
+%}
+
+#else
  // C-preprocessor
 #include <tcl.h>
 #include <tk.h>

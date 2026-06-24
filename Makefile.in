@@ -117,6 +117,7 @@ STLIB_LD	= @STLIB_LD@
 #TCL_DEFS	= @TCL_DEFS@
 TCL_BIN_DIR	= @TCL_BIN_DIR@
 TCL_SRC_DIR	= @TCL_SRC_DIR@
+TCL_MAJOR_VERSION = @TCL_MAJOR_VERSION@
 #TK_BIN_DIR	= @TK_BIN_DIR@
 #TK_SRC_DIR	= @TK_SRC_DIR@
 
@@ -210,7 +211,17 @@ all: @SWIG_WRAP@ binaries libraries
 wrap: $(SWIGOUTPUT)
 
 $(SWIGOUTPUT): $(SWIGINTERFACE)
-	$(SWIG) -tcl -pkgversion $(PACKAGE_VERSION) -module $(PACKAGE_NAME) $(SWIGDEFS) -o $(SWIGOUTPUT) $(SWIGINTERFACE)
+	@if test "$(TCL_MAJOR_VERSION)" -lt 9; then \
+		echo "Building for Tcl 8.x - using SWIG -tcl8"; \
+		$(SWIG) -tcl8 -pkgversion $(PACKAGE_VERSION) -module $(PACKAGE_NAME) $(SWIGDEFS) -o $(SWIGOUTPUT) $(SWIGINTERFACE); \
+	elif $(SWIG) -help 2>&1 | grep -q '\-tcl9'; then \
+		echo "Building for Tcl 9.x - using SWIG -tcl9"; \
+		$(SWIG) -tcl9 -pkgversion $(PACKAGE_VERSION) -module $(PACKAGE_NAME) $(SWIGDEFS) -o $(SWIGOUTPUT) $(SWIGINTERFACE); \
+	else \
+		echo "Building for Tcl 9.x - SWIG lacks -tcl9, using -tcl with compatibility patches"; \
+		$(SWIG) -tcl -pkgversion $(PACKAGE_VERSION) -module $(PACKAGE_NAME) $(SWIGDEFS) -o $(SWIGOUTPUT) $(SWIGINTERFACE); \
+		sed -i 's/int \*vlptr = (int \*) va_arg(ap, void \*);/Tcl_Size *vlptr = (Tcl_Size *) va_arg(ap, void *);/' $(SWIGOUTPUT); \
+	fi
 
 #========================================================================
 # The binaries target builds executable programs, Windows .dll's, unix

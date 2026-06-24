@@ -194,6 +194,9 @@ TEA_PROG_TCLSH
 #TEA_EXPORT_CONFIG([sample])
 #AC_SUBST(SAMPLE_VAR)
 
+# Export Tcl major version for SWIG flag selection
+AC_SUBST(TCL_MAJOR_VERSION)
+
 #--------------------------------------------------------------------
 # Specify files to substitute AC variables in. You may alternatively
 # have a special pkgIndex.tcl.in or other files which require
